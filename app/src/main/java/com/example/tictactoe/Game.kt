@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,24 +32,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+var totalFilledCell = 0
+val moveNumberOnCell = IntArray(9)
 @Composable
 
 fun Game(modifier: Modifier) {
     val board = remember { mutableStateListOf("", "", "", "", "", "", "", "", "") }
     val player by remember { mutableStateOf("X") }
     val computer by remember { mutableStateOf("O") }
-    var winner by remember { mutableStateOf("") }
+
     var expanded by remember { mutableStateOf(false) }
-    var totalFilledCell = 0
+    var winner by remember { mutableStateOf("") }
     var difficulty by remember { mutableStateOf("Easy") }
     val context = LocalContext.current
     val modeButtonColor = when (difficulty) {
@@ -57,6 +62,7 @@ fun Game(modifier: Modifier) {
         "Hard" -> Color.Red
         else -> Color.White
     }
+
 
     Column(
         modifier = modifier,
@@ -131,6 +137,7 @@ fun Game(modifier: Modifier) {
                 if (board[index].isEmpty()) {
                     board[index] = player
                     totalFilledCell++
+                    moveNumberOnCell[index] = totalFilledCell
                     var gameState = checkGameState(board)
                     if (gameState == player) {
                         winner = "You Win"
@@ -154,6 +161,7 @@ fun Game(modifier: Modifier) {
                         } else {
                             board[computerResponse] = computer
                             totalFilledCell++
+                            moveNumberOnCell[computerResponse] = totalFilledCell
                             gameState = checkGameState(board)
                             if (gameState == computer) {
                                 winner = "Computer Wins"
@@ -165,7 +173,7 @@ fun Game(modifier: Modifier) {
                 }
             }
 
-        }, board)
+        }, board, winner)
 
 
         Spacer(modifier = Modifier.padding(16.dp))
@@ -226,7 +234,7 @@ fun Game(modifier: Modifier) {
 
 
 @Composable
-fun TicTacToeGrid(onClick: (Int) -> Unit, board: List<String>) {
+fun TicTacToeGrid(onClick: (Int) -> Unit, board: List<String>, winner: String) {
     Column {
         for (row in 0..2) {
             Row {
@@ -234,7 +242,8 @@ fun TicTacToeGrid(onClick: (Int) -> Unit, board: List<String>) {
                     TicTacToeButton(
                         index = row * 3 + col,
                         onClick = onClick,
-                        board[row * 3 + col]
+                        board[row * 3 + col],
+                        moveNumber = if (winner != "" && board[row * 3 + col] != "") moveNumberOnCell[row * 3 + col] else null
                     )
                 }
             }
@@ -244,27 +253,69 @@ fun TicTacToeGrid(onClick: (Int) -> Unit, board: List<String>) {
 
 
 @Composable
-fun TicTacToeButton(index: Int, onClick: (Int) -> Unit, player : String) {
-    Button(
-        onClick = { onClick(index) },
+fun TicTacToeButton(index: Int, onClick: (Int) -> Unit, player: String) {
+    Box(
         modifier = Modifier
             .size(80.dp)
             .padding(4.dp)
-        ,
-        shape = RoundedCornerShape(16.dp), // Rounded corners
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent, // Transparent so gradient is visible
-        ),
-        border = BorderStroke(2.dp, Color.Green)
+            .border(2.dp, Color.Green, RoundedCornerShape(16.dp)) // Green border
+            .clickable { onClick(index) } // Clickable behavior
+            .background(Color.Transparent) // Transparent background
     ) {
         Text(
             text = player,
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold, // Bold text for emphasis
-            color = if (player == "X") Color.Green else Color.Red
+            color = if (player == "X") Color.Green else Color.Red,
+            modifier = Modifier.align(Alignment.Center)
         )
     }
 }
+@Composable
+fun TicTacToeButton(index: Int, onClick: (Int) -> Unit, player: String, moveNumber: Int?) {
+    Box(
+        modifier = Modifier
+            .size(80.dp)
+            .padding(4.dp)
+            .border(2.dp, Color.Green, RoundedCornerShape(16.dp)) // Rounded corners with border
+            .clickable { onClick(index) } // Clickable behavior
+            .background(Color.Transparent) // Transparent background
+    ) {
+        // Display move number at top-left corner if available
+        moveNumber?.let {
+            Text(
+                text = it.toString(),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(4.dp)
+            )
+        }
+
+        // Display player symbol (X or O) in the center
+        Text(
+            text = player,
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold, // Bold text for emphasis
+            color = if (player == "X") Color.Green else Color.Red,
+            modifier = Modifier.align(Alignment.Center)
+        )
+    }
+}
+@Preview(showBackground = true)
+@Composable
+fun TicTacToeButtonPreview() {
+    TicTacToeButton(
+        index = 1,
+        onClick = { /* Handle onClick */ },
+        player = "X", // Player "X"
+        moveNumber = 1 // Display move number 1
+    )
+}
+
+
 
 
 
