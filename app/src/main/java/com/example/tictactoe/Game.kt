@@ -62,8 +62,8 @@ fun Game(modifier: Modifier) {
     val context = LocalContext.current
     val modeButtonColor = when (difficulty) {
         "Easy" -> Color.Green
-        "Medium" -> Color.Yellow
-        "Hard" -> Color.Red
+        "Hard" -> Color.Yellow
+        "Impossible" -> Color.Red
         else -> Color.White
     }
 
