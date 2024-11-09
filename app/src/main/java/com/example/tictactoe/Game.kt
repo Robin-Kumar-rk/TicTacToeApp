@@ -45,16 +45,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-var totalFilledCell = 0
-val moveNumberOnCell = arrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0)
-val moveOrder = mutableListOf<Int>()
+
 @Composable
 
 fun Game(modifier: Modifier) {
     val board = remember { mutableStateListOf("", "", "", "", "", "", "", "", "") }
     val player by remember { mutableStateOf("X") }
     val computer by remember { mutableStateOf("O") }
-
+    var totalFilledCell = 0
+    val moveNumberOnCell = arrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0)
+    val moveOrder = mutableListOf<Int>()
     var expanded by remember { mutableStateOf(false) }
     var winner by remember { mutableStateOf("") }
     var difficulty by remember { mutableStateOf("Easy") }
@@ -121,11 +121,11 @@ fun Game(modifier: Modifier) {
                         difficulty = "Easy"
                         expanded = false
                     })
-                    DropdownMenuItem(text = { Text(text = "Medium") }, onClick = {
+                    DropdownMenuItem(text = { Text(text = "Hard") }, onClick = {
                         difficulty = "Medium"
                         expanded = false
                     })
-                    DropdownMenuItem(text = { Text(text = "Hard") }, onClick = {
+                    DropdownMenuItem(text = { Text(text = "Impossible") }, onClick = {
                         difficulty = "Hard"
                         expanded = false
                     })
@@ -178,7 +178,7 @@ fun Game(modifier: Modifier) {
                 }
             }
 
-        }, board)
+        }, board, moveNumberOnCell)
 
 
         Spacer(modifier = Modifier.padding(16.dp))
@@ -272,7 +272,7 @@ fun Game(modifier: Modifier) {
 
 
 @Composable
-fun TicTacToeGrid(onClick: (Int) -> Unit, board: List<String>) {
+fun TicTacToeGrid(onClick: (Int) -> Unit, board: List<String>, moveNumberOnCell: Array<Int>) {
     Column {
         for (row in 0..2) {
             Row {
@@ -281,6 +281,7 @@ fun TicTacToeGrid(onClick: (Int) -> Unit, board: List<String>) {
                         index = row * 3 + col,
                         onClick = onClick,
                         board[row * 3 + col],
+                        moveNumberOnCell
                     )
                 }
             }
@@ -289,7 +290,7 @@ fun TicTacToeGrid(onClick: (Int) -> Unit, board: List<String>) {
 }
 
 @Composable
-fun TicTacToeCell(index: Int, onClick: (Int) -> Unit, player: String) {
+fun TicTacToeCell(index: Int, onClick: (Int) -> Unit, player: String, moveNumberOnCell: Array<Int>) {
     Box(
         modifier = Modifier
             .size(80.dp)
@@ -319,15 +320,6 @@ fun TicTacToeCell(index: Int, onClick: (Int) -> Unit, player: String) {
             modifier = Modifier.align(Alignment.Center)
         )
     }
-}
-@Preview(showBackground = true)
-@Composable
-fun TicTacToeButtonPreview() {
-    TicTacToeCell(
-        index = 1,
-        onClick = { /* Handle onClick */ },
-        player = "X", // Player "X"
-    )
 }
 
 
