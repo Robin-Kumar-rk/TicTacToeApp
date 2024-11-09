@@ -1,5 +1,6 @@
 package com.example.tictactoe
 
+import android.widget.Button
 import android.widget.Toast
 
 import androidx.compose.foundation.BorderStroke
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -44,7 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 var totalFilledCell = 0
-val moveNumberOnCell = IntArray(9)
+val moveNumberOnCell = arrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0)
+val moveOrder = mutableListOf<Int>()
 @Composable
 
 fun Game(modifier: Modifier) {
@@ -138,6 +141,7 @@ fun Game(modifier: Modifier) {
                     board[index] = player
                     totalFilledCell++
                     moveNumberOnCell[index] = totalFilledCell
+                    moveOrder.add(index)
                     var gameState = checkGameState(board)
                     if (gameState == player) {
                         winner = "You Win"
@@ -162,6 +166,7 @@ fun Game(modifier: Modifier) {
                             board[computerResponse] = computer
                             totalFilledCell++
                             moveNumberOnCell[computerResponse] = totalFilledCell
+                            moveOrder.add(computerResponse)
                             gameState = checkGameState(board)
                             if (gameState == computer) {
                                 winner = "Computer Wins"
@@ -173,7 +178,7 @@ fun Game(modifier: Modifier) {
                 }
             }
 
-        }, board, winner)
+        }, board)
 
 
         Spacer(modifier = Modifier.padding(16.dp))
@@ -213,37 +218,69 @@ fun Game(modifier: Modifier) {
             }
         }
         Spacer(modifier = Modifier.padding(16.dp))
-        Button(
-            onClick = {
-                for (i in board.indices) {
-                    board[i] = ""
-                }
-                winner = ""
-                totalFilledCell = 0
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Black, // Set the background color
-                contentColor = Color(0xFF18FAFA)
-            ),
-            border = BorderStroke(4.dp, Color(0xFF36F8FF))
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
         ) {
-            Text(text = "Reset")
+            Button (
+                onClick = {
+                    if (!moveOrder.isEmpty()) {
+                        val lastMove = moveOrder.removeAt(moveOrder.lastIndex)
+                        board[lastMove] = ""
+                        moveNumberOnCell[lastMove] = 0
+                        totalFilledCell -= 1
+                        if (moveOrder.size % 2 != 0) {
+                            val secondLastMove = moveOrder.removeAt(moveOrder.lastIndex)
+                            board[secondLastMove] = ""
+                            moveNumberOnCell[secondLastMove] = 0
+                            totalFilledCell -= 1
+                        }
+                    }
+                    winner = ""
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Black, // Set the background color
+                    contentColor = Color(0xFF18FAFA)
+                ),
+                border = BorderStroke(4.dp, Color(0xFF36F8FF))
+            ) {
+                Text(text = "Back")
+            }
+            Button(
+                onClick = {
+                    for (i in board.indices) {
+                        board[i] = ""
+                        moveNumberOnCell[i] = 0
+                    }
+                    winner = ""
+                    totalFilledCell = 0
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Black, // Set the background color
+                    contentColor = Color(0xFF18FAFA)
+                ),
+                border = BorderStroke(4.dp, Color(0xFF36F8FF))
+            ) {
+                Text(text = "Reset")
+            }
         }
     }
+
 }
 
 
 @Composable
-fun TicTacToeGrid(onClick: (Int) -> Unit, board: List<String>, winner: String) {
+fun TicTacToeGrid(onClick: (Int) -> Unit, board: List<String>) {
     Column {
         for (row in 0..2) {
             Row {
                 for (col in 0..2) {
-                    TicTacToeButton(
+                    TicTacToeCell(
                         index = row * 3 + col,
                         onClick = onClick,
                         board[row * 3 + col],
-                        moveNumber = if (winner != "" && board[row * 3 + col] != "") moveNumberOnCell[row * 3 + col] else null
                     )
                 }
             }
@@ -251,28 +288,8 @@ fun TicTacToeGrid(onClick: (Int) -> Unit, board: List<String>, winner: String) {
     }
 }
 
-
 @Composable
-fun TicTacToeButton(index: Int, onClick: (Int) -> Unit, player: String) {
-    Box(
-        modifier = Modifier
-            .size(80.dp)
-            .padding(4.dp)
-            .border(2.dp, Color.Green, RoundedCornerShape(16.dp)) // Green border
-            .clickable { onClick(index) } // Clickable behavior
-            .background(Color.Transparent) // Transparent background
-    ) {
-        Text(
-            text = player,
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold, // Bold text for emphasis
-            color = if (player == "X") Color.Green else Color.Red,
-            modifier = Modifier.align(Alignment.Center)
-        )
-    }
-}
-@Composable
-fun TicTacToeButton(index: Int, onClick: (Int) -> Unit, player: String, moveNumber: Int?) {
+fun TicTacToeCell(index: Int, onClick: (Int) -> Unit, player: String) {
     Box(
         modifier = Modifier
             .size(80.dp)
@@ -282,17 +299,16 @@ fun TicTacToeButton(index: Int, onClick: (Int) -> Unit, player: String, moveNumb
             .background(Color.Transparent) // Transparent background
     ) {
         // Display move number at top-left corner if available
-        moveNumber?.let {
-            Text(
-                text = it.toString(),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(4.dp)
-            )
-        }
+        Text(
+            text = if (moveNumberOnCell[index] == 0) "" else moveNumberOnCell[index].toString(),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(4.dp)
+        )
+
 
         // Display player symbol (X or O) in the center
         Text(
@@ -307,11 +323,10 @@ fun TicTacToeButton(index: Int, onClick: (Int) -> Unit, player: String, moveNumb
 @Preview(showBackground = true)
 @Composable
 fun TicTacToeButtonPreview() {
-    TicTacToeButton(
+    TicTacToeCell(
         index = 1,
         onClick = { /* Handle onClick */ },
         player = "X", // Player "X"
-        moveNumber = 1 // Display move number 1
     )
 }
 
