@@ -28,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,9 +53,9 @@ fun Game(modifier: Modifier) {
     val board = remember { mutableStateListOf("", "", "", "", "", "", "", "", "") }
     val player by remember { mutableStateOf("X") }
     val computer by remember { mutableStateOf("O") }
-    var totalFilledCell = 0
-    val moveNumberOnCell = arrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0)
-    val moveOrder = mutableListOf<Int>()
+    var totalFilledCell by remember { mutableIntStateOf(0) }
+    val moveNumberOnCell by remember { mutableStateOf(arrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0)) }
+    val moveOrder by remember { mutableStateOf(mutableListOf<Int>())}
     var expanded by remember { mutableStateOf(false) }
     var winner by remember { mutableStateOf("") }
     var difficulty by remember { mutableStateOf("Easy") }
@@ -122,11 +123,11 @@ fun Game(modifier: Modifier) {
                         expanded = false
                     })
                     DropdownMenuItem(text = { Text(text = "Hard") }, onClick = {
-                        difficulty = "Medium"
+                        difficulty = "Hard"
                         expanded = false
                     })
                     DropdownMenuItem(text = { Text(text = "Impossible") }, onClick = {
-                        difficulty = "Hard"
+                        difficulty = "Impossible"
                         expanded = false
                     })
                 }

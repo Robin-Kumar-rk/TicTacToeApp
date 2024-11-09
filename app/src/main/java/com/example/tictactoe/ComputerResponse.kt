@@ -11,7 +11,7 @@ fun computerResponse(
 ): Int {
     return if (difficulty == "Easy") {
         easyResponse(board, totalFilledCell, player, computer)
-    } else if (difficulty == "Medium") {
+    } else if (difficulty == "Hard") {
         normalResponse(board, player, totalFilledCell, computer, lastMove)
     } else {
         hardResponse(board, computer, player, totalFilledCell, lastMove)
