@@ -257,6 +257,7 @@ fun Game(modifier: Modifier) {
                     }
                     winner = ""
                     totalFilledCell = 0
+                    moveOrder.clear()
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black, // Set the background color
