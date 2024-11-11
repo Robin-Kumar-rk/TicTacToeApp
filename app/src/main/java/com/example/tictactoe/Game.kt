@@ -77,7 +77,7 @@ fun Game(modifier: Modifier) {
             modifier = Modifier
                 .padding(16.dp)
                 .border(
-                    2.dp,
+                    4.dp,
                     brush = Brush.linearGradient(
                         colors = listOf(Color.Red, Color.Green, Color.Blue), // Gradient colors
                     ),
@@ -113,7 +113,7 @@ fun Game(modifier: Modifier) {
                     ),
                     border = BorderStroke(2.dp, modeButtonColor)
                 ) {
-                    Text(text = difficulty)
+                    Text(text = difficulty, fontSize = 24.sp)
                     Icon(Icons.Default.ArrowDropDown, contentDescription = "")
                 }
 
@@ -202,7 +202,7 @@ fun Game(modifier: Modifier) {
                 ) {
                     Text(
                         text = winner,
-                        fontSize = 24.sp, // Larger font size for emphasis
+                        fontSize = 32.sp, // Larger font size for emphasis
                         fontWeight = FontWeight.Bold, // Bold text
                         color = Color(0xFF8AF360), // Red text color for excitement ,
                         modifier = Modifier.align(Alignment.Center) // Center the text
@@ -212,7 +212,7 @@ fun Game(modifier: Modifier) {
             } else {
                 Text(
                     text = winner,
-                    fontSize = 24.sp,
+                    fontSize = 32.sp,
                     color = Color.Red,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -247,7 +247,7 @@ fun Game(modifier: Modifier) {
                 ),
                 border = BorderStroke(4.dp, Color(0xFF36F8FF))
             ) {
-                Text(text = "Back")
+                Text(text = "Back", fontSize = 24.sp)
             }
             Button(
                 onClick = {
@@ -265,7 +265,7 @@ fun Game(modifier: Modifier) {
                 ),
                 border = BorderStroke(4.dp, Color(0xFF36F8FF))
             ) {
-                Text(text = "Reset")
+                Text(text = "Reset", fontSize = 24.sp)
             }
         }
     }
@@ -297,7 +297,7 @@ fun TicTacToeCell(index: Int, onClick: (Int) -> Unit, player: String, moveNumber
         modifier = Modifier
             .size(80.dp)
             .padding(4.dp)
-            .border(2.dp, Color.Green, RoundedCornerShape(16.dp)) // Rounded corners with border
+            .border(4.dp, Color.Green, RoundedCornerShape(16.dp)) // Rounded corners with border
             .clickable { onClick(index) } // Clickable behavior
             .background(Color.Transparent) // Transparent background
     ) {
