@@ -15,10 +15,6 @@ A Tic-Tac-Toe game built with **Kotlin** and **Jetpack Compose**. This app isn't
 - **Undo Functionality**  
   A back button allows players to undo any move, making it easy to experiment with different strategies and see alternative outcomes.
 
-## Screenshots
-<!-- Add screenshots of your app here if you have any, e.g.: -->
-![Screenshot 1](path_to_screenshot_1)
-![Screenshot 2](path_to_screenshot_2)
 
 ## Installation
 
